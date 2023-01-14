@@ -1,0 +1,388 @@
+
+USE DEMO;
+
+SELECT * FROM CITY;
+
+SELECT LAT FROM CITY WHERE LAT>50
+
+SELECT D.* FROM (SELECT LAT FROM CITY) AS D WHERE D.LAT > 45;
+
+
+SELECT CITY_NAME,LONG,
+CASE WHEN LONG > 0 THEN 'VALID' ELSE 'IN VALID' END AS STATUS ,
+FROM CITY;
+
+SELECT CITY_NAME,LAT,
+CASE 
+WHEN LAT < 40 THEN 'AVG'
+WHEN LAT BETWEEN 40 AND 50 THEN 'GOOD'
+WHEN LAT > 50 THEN 'VERY GOOD'
+END AS STATUS
+FROM CITY;
+
+--SUBQUERY
+SELECT CITY_NAME, LAT AS MAX_LAT FROM CITY WHERE LAT IN (SELECT MAX(LAT) FROM CITY)
+
+--DERIVED TABLE
+SELECT D.* FROM (SELECT LAT FROM CITY) D WHERE D.LAT > 45;
+
+SELECT * FROM ConstraintDemo4;
+
+--NULL CHECK
+SELECT * FROM ConstraintDemo4 WHERE Salary > 0 OR Salary IS NULL;
+
+SELECT * FROM ConstraintDemo4  WHERE SALARY IN (SELECT SALARY FROM ConstraintDemo4 WHERE SALARY IS NOT NULL)
+
+SELECT * FROM ConstraintDemo4  WHERE SALARY IN (SELECT SALARY FROM ConstraintDemo4)
+
+SELECT * FROM ConstraintDemo4;
+
+SET IMPLICIT_TRANSACTIONS ON --/OFF;
+
+UPDATE ConstraintDemo4 SET NAME='john' WHERE ID=1
+COMMIT;
+
+ROLLBACK;
+
+BEGIN TRAN
+--SELECT * FROM ConstraintDemo4;
+UPDATE ConstraintDemo4 SET NAME='john' WHERE ID=1
+--SELECT * FROM ConstraintDemo4;
+ROLLBACK TRAN
+
+SELECT * FROM ConstraintDemo4;
+
+
+--Windowfunction; ROW_NUMBER(), RANK(), DENSE_RANK(),LAG(),LEAD(),FIRST_VALUE(),LAST_VALUE(),NTILE()
+
+select * from city;
+
+SELECT *,ROW_NUMBER() OVER ( ORDER BY LAT) AS ROW_NO FROM CITY;
+
+SELECT *,ROW_NUMBER() OVER ( PARTITION BY COUNTRY_ID ORDER BY CITY_NAME) AS ROW_NO FROM CITY;
+
+
+CREATE TABLE ExamResult
+(StudentName VARCHAR(70), 
+ Subject     VARCHAR(20), 
+ Marks       INT
+);
+
+INSERT INTO ExamResult
+VALUES ('Lily','Maths',65);
+
+INSERT INTO ExamResult
+VALUES ('Lily','Science',80);
+
+INSERT INTO ExamResult
+VALUES ('Lily','english', 70);
+
+INSERT INTO ExamResult
+VALUES ('Isabella', 'Maths',50);
+
+INSERT INTO ExamResult
+VALUES('Isabella','Science',70);
+
+INSERT INTO ExamResult
+VALUES('Isabella','english',90);
+
+INSERT INTO ExamResult
+VALUES('Olivia','Maths',55);
+
+INSERT INTO ExamResult
+VALUES('Olivia','Science',60);
+
+INSERT INTO ExamResult
+VALUES('Olivia','english',89);
+
+INSERT INTO ExamResult
+VALUES('wahid','maths',50);
+
+
+select * from ExamResult;
+
+
+select *,ROW_NUMBER() OVER( ORDER BY MARKS) AS ROW_NOW FROM ExamResult;
+
+select *,ROW_NUMBER() OVER( PARTITION BY STUDENTNAME ORDER BY MARKS) AS ROW_NOW FROM ExamResult;
+
+select *,RANK() OVER( ORDER BY MARKS desc) AS Rank FROM ExamResult;
+
+select *,RANK() OVER( ORDER BY MARKS desc) AS Rank,DENSE_RANK() OVER( ORDER BY MARKS desc) AS Dense_Rank FROM ExamResult;
+
+select *,RANK() OVER( PARTITION BY STUDENTNAME ORDER BY MARKS DESC) AS RANK_PART FROM ExamResult;
+
+select *,RANK() OVER( PARTITION BY SUBJECT ORDER BY MARKS DESC) AS RANK_PART,DENSE_RANK() OVER( PARTITION BY SUBJECT ORDER BY MARKS DESC) AS DENSE_RANK_PART FROM ExamResult;
+
+select *,LAG(Marks,1) OVER( partition by studentname ORDER BY MARKS DESC) AS LAG_RES FROM ExamResult;
+
+
+SELECT * FROM customer;
+
+select *,LAG(ts_inserted,1) OVER( partition by city_id ORDER BY city_id DESC) AS LAG_RES FROM customer;
+
+select *,LAG(Marks,1) OVER( partition by studentname ORDER BY MARKS DESC) AS LAG_RES FROM ExamResult;
+
+
+SELECT * FROM customer;
+
+select *,Lead(ts_inserted,1) OVER(partition by city_id ORDER BY city_id DESC) AS Lead_RES FROM customer;
+
+select *,lead(Marks,1) OVER( partition by studentname ORDER BY MARKS DESC) AS LAG_RES FROM ExamResult;
+
+
+SELECT * FROM customer;
+
+select *,first_value (ts_inserted) OVER(partition by city_id ORDER BY city_id DESC) AS frist_RES FROM customer;
+
+select *,first_value (Marks) OVER( partition by studentname ORDER BY MARKS DESC) AS first_RES FROM ExamResult;
+
+select *,first_value (ts_inserted) OVER(ORDER BY city_id) AS frist_RES FROM customer;
+
+select *,last_value (ts_inserted) OVER(ORDER BY city_id) AS frist_RES FROM customer;
+
+select *,last_value (ts_inserted) OVER(partition by city_id ORDER BY city_id DESC) AS frist_RES FROM customer;
+
+
+select *,first_value (ts_inserted) OVER(ORDER BY city_id DESC) AS frist_RES FROM customer;
+
+select *,first_value (ts_inserted) OVER(partition by city_id ORDER BY city_id DESC) AS frist_RES FROM customer;
+
+
+select *,last_value (Marks) OVER( partition by studentname ORDER BY MARKS DESC) AS first_RES FROM ExamResult;
+
+select *,ntile (4) OVER(ORDER BY city_id DESC) AS frist_RES FROM customer;
+
+select *,ntile (3) OVER( ORDER BY MARKS DESC) AS first_RES FROM ExamResult;
+
+UPDATE ExamResult SET Marks=60 WHERE Subject ='Maths';
+
+select * from tbl_a;
+
+select * from tbl_b;
+
+create index inx_name on tbl_a(name);
+
+
+SET STATISTICS TIME ON
+SET STATISTICS IO ON
+
+--===================
+USE DEMO;
+SELECT * FROM customer
+
+SELECT CONCAT(ID,'-',CUSTOMER_NAME) AS NAME ,* FROM customer;
+
+Concatenation:
+
+SELECT CONCAT('SQL TRAINING','_','CONCAT'); 
+
+SELECT CONCAT('SQL TRAINING',NULL,'CONCAT'); //RS null
+
+
+SELECT 
+    concat(contactFirstName,' ',contactLastName) Fullname
+FROM
+    custome('-rs;
+
+
+SELECT CONCAT_WS','John','Doe','FIRST','SEC') AS NAME; //with separator
+
+
+SELECT CONCAT_WS(',','John',NULL); //
+
+
+select LEN('TRAINING');
+
+
+SELECT LEFT('SQL TRAINING', 7);
+
+SELECT LEFT('SQL TRAINING', 0); 
+SELECT RIGHT('SQL TRAINING', 5);
+
+SELECT REVERSE(RIGHT('SQL TRAINING',7)); //return an empty string
+	
+	
+SELECT SUBSTRING('SQL TRAINING SUBSTRING',1,5); //SUBSTRING count 1
+SELECT SUBSTRING('SQL TRAINING SUBSTRING',-1,5);
+
+SELECT ('    SQL TRAINING TRIM Function     ');
+SELECT LTRIM('    SQL TRAINING TRIM Function     ');
+SELECT LEN(LTRIM('    SQL TRAINING TRIM Function   '));
+SELECT RTRIM('SQL TRAINING RTRIM function   ');
+
+select Charindex('@', 'testmail@gmail.com')
+------------------
+
+SELECT SUBSTRING('testmailrtrete@gmail.com', 1, Charindex('@', 'testmailrtrete@gmail.com') - 1) AS localpart; //testmail
+
+select substring('testmail@hm.com', Charindex('@', 'testmail@gmail.com') +1,LEN('testmail@gmail.com')) AS domainname; // gmail.com
+
+SELECT UPPER('Testing Class') AS MatchPosition;
+
+SELECT LOWER('Testing Class') AS MatchPosition;
+
+SELECT ROUND(748.5845 ,0);
+
+SELECT ROUND(748.5845 ,3);
+
+
+SELECT value FROM STRING_SPLIT('Lorem ipsum dolor sit amet.', ' ');
+
+SELECT REPLACE('testing class', ' class', ' HTML');
+
+
+SELECT CAST('14:06:10' AS TIME);
+SELECT CAST('2017-08-29' AS DATE);
+
+
+--================================================
+
+ABS –  return the absolute value of a number.
+SELECT ABS(-10), ABS(0),ABS(10);
+
+CEIL –  return the smallest integer value greater than or equal to the input number.
+SELECT CEILING (1.22);
+
+SELECT CEILING(-1.59);
+
+FLOOR – return the largest integer value not greater than the argument.
+SELECT FLOOR(1.59);
+
+SELECT FLOOR(-1.59);
+
+SELECT 
+    productLine, 
+    FLOOR(AVG(quantityInStock)) averageStock
+FROM
+    products
+GROUP BY 
+    productLine
+ORDER BY 
+    averageStock;
+
+
+ROUND – rounds a number to a specified number of decimal places.
+SELECT ROUND(20.5,0);
+
+
+SELECT 
+    productCode,
+    ROUND(AVG(quantityOrdered * priceEach)) avg_order_item_value
+FROM
+    orderDetails
+GROUP BY 
+    productCode; 
+
+
+
+SELECT 
+	GETDATE(),
+	SYSDATETIME() sys_date, 
+	YEAR('2020/05/01 14:38:52') AS _year, 
+	MONTH('2020/05/01 14:38:52') AS _month, 
+	DAY('2020/05/01 14:38:52') AS _day;
+ 
+SELECT 
+	DATEPART(YEAR,'2020/05/01 14:38:52') AS _year, 
+	DATEPART(MONTH, '2020/05/01 14:38:52') AS _month, 
+	DATEPART(DAY, '2020/05/01 14:38:52') AS _day, 
+	DATEPART(HOUR, '2020/05/01 14:38:52') AS _hour, 
+	DATEPART(MINUTE, '2020/05/01 14:38:52') AS _minute, 
+	DATEPART(SECOND, '2020/05/01 14:38:52') AS _second;
+ 
+SELECT 
+	DATENAME(YEAR, '2020/05/01 14:38:52') AS _year, 
+	DATENAME(MONTH, '2020/05/01 14:38:52') AS _month, 
+	DATENAME(DAY, '2020/05/01 14:38:52') AS _day, 
+	DATENAME(HOUR, '2020/05/01 14:38:52') AS _hour, 
+	DATENAME(MINUTE, '2020/05/01 14:38:52') AS _minute, 
+	DATENAME(SECOND, '2020/05/01 14:38:52') AS _second;
+
+
+SELECT DATEFROMPARTS(2020,5,1) AS _date;
+SELECT DATEADD(DAY, 10, '2020-05-01') AS _date_add;
+SELECT DATEDIFF(DAY, '2020-05-01', '2020-05-10') AS _date_difference;
+
+SELECT GETUTCDATE() _GETUTCDATE;
+SELECT SYSUTCDATETIME() _SYSUTCDATETIME;
+SELECT SYSDATETIMEOFFSET() AS _SYSDATETIMEOFFSET;
+
+
+
+DROP VIEW IF EXISTS v_country_all;
+GO
+CREATE VIEW vw_city AS
+  SELECT * FROM city;
+
+
+select * from vw_city;
+
+
+function name(a int)
+	print(test ,a)
+
+name --test
+name(999)
+
+
+
+
+
+
+-- STORE PROCEDURE:
+
+CREATE PROCEDURE sp_customer1
+AS
+BEGIN
+ 
+ select *,NTILE (2) OVER( ORDER BY NEXT_CALL_DATE ) Rank from customer
+
+END;
+
+exec sp_customer1
+
+
+-- ALTER STORE PROCEDURE:
+ALTER PROCEDURE sp_customer1
+AS
+BEGIN
+select *, 
+       NTILE (1) OVER( ORDER BY NEXT_CALL_DATE ) Rank
+FROM customer;
+ 
+END
+
+-- SP WITH PARAMETER:
+
+CREATE PROCEDURE GetProductDesc_withparameters1 (@PID INT)
+AS
+BEGIN
+
+ select * from customer where id > @pid; 
+END
+
+EXEC GetProductDesc_withparameters1 1
+
+-- INPUT/OUTPUT STORE PROCEDURE:
+
+drop procedure ins_NewEmp_with_outputparamaters;
+
+CREATE TABLE sp_emp1 (EmpID int identity(1,1),EmpName varchar(500))
+
+CREATE PROCEDURE ins_NewEmp_with_outputparamaters1 (@Ename varchar(50),@EId int output)
+AS
+BEGIN 
+INSERT INTO sp_emp1 (EmpName) VALUES (@Ename) 
+--SELECT @EId= SCOPE_IDENTITY()
+SELECT @EId 
+END
+
+
+declare @EmpID INT
+ 
+EXEC ins_NewEmp_with_outputparamaters1 'wahid-232', 3
+--EXEC ins_NewEmp_with_outputparamaters 'wahid', @EmpID OUTPUT
+ 
+SELECT * from sp_emp1
+
